@@ -6,7 +6,7 @@ import AdminPanel from './components/AdminPanel';
 
 function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Routes>
                 <Route path="/" element={<Navigate to="/setup" replace />} />
                 <Route path="/setup" element={<SetupWizard />} />
