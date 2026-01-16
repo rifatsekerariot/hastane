@@ -73,6 +73,7 @@ docker-compose up --build
 
 - **Frontend:** http://localhost:5173
 - **Backend:** http://localhost:3005
+- **DB:** 5434 portu (Host), 5432 (Container)
 - **HL7 Dinleyici:** 2575 portu
 
 ## 📝 Lisans
