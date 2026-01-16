@@ -17,6 +17,10 @@ const AdminPanel = () => {
     const [newRoom, setNewRoom] = useState({ roomNumber: '', department: '' });
     const [newUser, setNewUser] = useState({ username: '', password: '', fullName: '', role: 'viewer' });
 
+    // Settings State
+    const [settings, setSettings] = useState({ hospitalName: '', hl7Port: 2575 });
+    const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+
     useEffect(() => {
         fetchData();
     }, [activeTab]);
@@ -43,6 +47,12 @@ const AdminPanel = () => {
             } else if (activeTab === 'users') {
                 const usersRes = await api.get(`/api/users`);
                 setUsers(usersRes.data);
+            } else if (activeTab === 'settings') {
+                const settingsRes = await api.get(`/api/settings`);
+                setSettings({
+                    hospitalName: settingsRes.data.hospital_name,
+                    hl7Port: settingsRes.data.hl7_port
+                });
             }
         } catch (error) {
             console.error('Error fetching data', error);
@@ -53,6 +63,33 @@ const AdminPanel = () => {
     };
 
     // --- Action Handlers ---
+
+    // --- Action Handlers ---
+
+    const handleUpdateSettings = async (e) => {
+        e.preventDefault();
+        try {
+            await api.put('/api/settings', settings);
+            alert('Ayarlar güncellendi');
+        } catch (error) { alert('Hata oluştu'); }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            return alert('Yeni şifreler uyuşmuyor');
+        }
+        try {
+            await api.put('/api/users/change-password', {
+                currentPassword: passwordForm.currentPassword,
+                newPassword: passwordForm.newPassword
+            });
+            alert('Şifre başarıyla değiştirildi');
+            setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (error) {
+            alert(error.response?.data?.msg || 'Şifre değiştirilemedi');
+        }
+    };
 
     const handleCreateRoom = async (e) => {
         e.preventDefault();
@@ -112,6 +149,12 @@ const AdminPanel = () => {
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'users' ? 'bg-blue-600' : 'hover:bg-slate-700'}`}
                     >
                         <Users size={20} /> Kullanıcılar
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('settings')}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'settings' ? 'bg-blue-600' : 'hover:bg-slate-700'}`}
+                    >
+                        <Settings size={20} /> Ayarlar
                     </button>
                     {/* Settings Tab Placeholder */}
                 </nav>
@@ -207,9 +250,49 @@ const AdminPanel = () => {
                         </div>
                     </div>
                 )}
+
+                {/* Settings Tab */}
+                {activeTab === 'settings' && (
+                    <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* System Settings */}
+                        <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Settings className="text-blue-400" /> Sistem Ayarları</h2>
+                            <form onSubmit={handleUpdateSettings} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Hastane Adı</label>
+                                    <input className="w-full bg-slate-700 p-3 rounded outline-none focus:ring-2 ring-blue-500" value={settings.hospitalName} onChange={e => setSettings({ ...settings, hospitalName: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">HL7 Portu</label>
+                                    <input type="number" className="w-full bg-slate-700 p-3 rounded outline-none focus:ring-2 ring-blue-500" value={settings.hl7Port} onChange={e => setSettings({ ...settings, hl7Port: e.target.value })} />
+                                </div>
+                                <button className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded font-bold transition-colors flex items-center justify-center gap-2"><Check size={18} /> Kaydet</button>
+                            </form>
+                        </div>
+
+                        {/* Password Change */}
+                        <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Shield className="text-green-400" /> Şifre Değiştir</h2>
+                            <form onSubmit={handleChangePassword} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Mevcut Şifre</label>
+                                    <input type="password" className="w-full bg-slate-700 p-3 rounded outline-none focus:ring-2 ring-blue-500" value={passwordForm.currentPassword} onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })} required />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Yeni Şifre</label>
+                                    <input type="password" className="w-full bg-slate-700 p-3 rounded outline-none focus:ring-2 ring-blue-500" value={passwordForm.newPassword} onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} required />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Yeni Şifre (Tekrar)</label>
+                                    <input type="password" className="w-full bg-slate-700 p-3 rounded outline-none focus:ring-2 ring-blue-500" value={passwordForm.confirmPassword} onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })} required />
+                                </div>
+                                <button className="w-full bg-green-600 hover:bg-green-700 py-3 rounded font-bold transition-colors flex items-center justify-center gap-2"><Check size={18} /> Güncelle</button>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
-
 export default AdminPanel;
