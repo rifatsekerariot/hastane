@@ -1,25 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Settings, Save } from 'lucide-react';
+import { getApiUrl } from '../utils/apiConfig';
 
 const SetupWizard = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        hospitalName: '',
-        adminPassword: '',
-        hl7Port: 2575
-    });
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
+    // ...
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Adjust API URL if backend is on different port
-            await axios.post('http://localhost:3005/api/setup/initialize', formData);
+            const apiUrl = getApiUrl();
+            await axios.post(`${apiUrl}/api/setup/initialize`, formData);
             alert('Kurulum Tamamlandı!');
             navigate('/admin');
         } catch (error) {

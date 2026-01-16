@@ -3,7 +3,9 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import { Activity, XCircle, Baby, CheckCircle } from 'lucide-react';
 
-const socket = io('http://localhost:3005'); // Backend URL
+import { getApiUrl } from '../utils/apiConfig';
+
+const socket = io(getApiUrl());
 
 const RoomScreen = () => {
     const { deviceToken } = useParams(); // URL parameter for device binding
