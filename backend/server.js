@@ -32,6 +32,10 @@ app.get('/', (req, res) => {
     res.send('Hospital Info Screen Backend Running');
 });
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date() });
+});
+
 // Socket.io Connection Logic
 require('./services/socketService')(io);
 
