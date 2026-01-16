@@ -49,29 +49,46 @@ const RoomScreen = () => {
     };
 
     return (
-        <div className={`min-h-screen flex flex-col items-center justify-center text-white transition-colors duration-500 ${getTheme()}`}>
+        <div className={`w-screen h-screen flex flex-col justify-between items-center text-white transition-colors duration-500 overflow-hidden ${getTheme()} p-4 md:p-12`}>
 
-            {/* Status Header */}
-            <div className="absolute top-6 md:top-10 text-xl md:text-4xl font-bold uppercase tracking-widest opacity-80 text-center px-4">
-                {roomData.status === 'Normal' ? 'Oda Bilgisi' : roomData.status}
-            </div>
-
-            {/* Main Content */}
-            <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4">
-                {roomData.status === 'Bebek' && <Baby className="w-24 h-24 md:w-32 md:h-32 text-white drop-shadow-lg" />}
-                {roomData.status === 'Ameliyatta' && <Activity className="w-24 h-24 md:w-32 md:h-32 text-white drop-shadow-lg" />}
-
-                <h1 className="text-4xl md:text-7xl font-black drop-shadow-xl p-4 md:p-6 bg-black/20 rounded-xl backdrop-blur-sm text-center w-full max-w-4xl break-words">
-                    {roomData.patientName || 'BOŞ'}
-                </h1>
-
-                <div className="text-lg md:text-2xl mt-4 font-light opacity-90 text-center">
-                    {roomData.doctorName}
+            {/* Header: Room Status */}
+            <div className="w-full flex justify-center items-start pt-4">
+                <div className="text-2xl md:text-5xl font-bold uppercase tracking-[0.2em] opacity-90 text-center bg-black/20 px-8 py-2 rounded-full backdrop-blur-sm shadow-sm border border-white/10">
+                    {roomData.status === 'Normal' ? 'Oda Bilgisi' : roomData.status}
                 </div>
             </div>
 
-            {/* Footer / Connection Status */}
-            <div className={`absolute bottom-5 right-5 w-4 h-4 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} title={connected ? "Online" : "Offline"} />
+            {/* Main Content: Icons & Patient Name */}
+            <div className="flex-1 flex flex-col items-center justify-center w-full gap-6 md:gap-12 animate-fade-in">
+                {/* Dynamic Status Icons */}
+                {roomData.status === 'Bebek' && (
+                    <div className="bg-white/20 p-6 rounded-full backpack-blur-md animate-bounce">
+                        <Baby className="w-24 h-24 md:w-48 md:h-48 text-white drop-shadow-2xl" strokeWidth={1.5} />
+                    </div>
+                )}
+                {roomData.status === 'Ameliyatta' && (
+                    <div className="bg-white/20 p-6 rounded-full backpack-blur-md animate-pulse">
+                        <Activity className="w-24 h-24 md:w-48 md:h-48 text-white drop-shadow-2xl" strokeWidth={1.5} />
+                    </div>
+                )}
+
+                {/* Patient Name - Responsive Typography */}
+                <h1 className="text-5xl md:text-[8vw] font-black leading-tight text-center drop-shadow-2xl max-w-full break-words px-4">
+                    {roomData.patientName || 'BOŞ'}
+                </h1>
+            </div>
+
+            {/* Footer: Doctor Info */}
+            <div className="w-full flex flex-col items-center justify-end pb-4 gap-2">
+                <div className="text-xl md:text-4xl font-medium tracking-wide opacity-90 bg-black/20 px-10 py-3 rounded-2xl backdrop-blur-md border border-white/10">
+                    {roomData.doctorName}
+                </div>
+
+                {/* Visual Connection Indicator (Subtle) */}
+                <div className={`mt-2 text-[10px] uppercase tracking-widest font-bold ${connected ? 'text-green-400 opacity-60' : 'text-red-400 opacity-90'}`}>
+                    {connected ? 'Sistem Çevrimiçi' : 'Bağlantı Yok'}
+                </div>
+            </div>
         </div>
     );
 };
