@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
+const auth = require('../middleware/auth');
 
-// Middleware to check admin auth (Skipped for simplicity, but normally required)
-// const authMiddleware = ...
+// Secure all admin routes
+router.use(auth);
 
 // --- Rooms ---
 router.get('/rooms', async (req, res) => {
