@@ -3,6 +3,7 @@ version: '3.8'
 services:
   backend:
     build: ./backend
+    restart: always
     ports:
       - "3005:3005"
       - "2575:2575"
