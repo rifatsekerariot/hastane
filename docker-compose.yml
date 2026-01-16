@@ -15,7 +15,8 @@ services:
       - DB_NAME=hospital_db
       - HL7_PORT=2575
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/node_modules
