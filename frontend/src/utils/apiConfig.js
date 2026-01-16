@@ -11,11 +11,12 @@ export const getApiUrl = () => {
         return import.meta.env.VITE_API_URL;
     }
 
-    // Fallback for local dev if .env not set
-    if (window.location.hostname === 'localhost') {
-        return 'http://localhost:3005';
+    // Default to relative if on HTTPS (Production/Nginx)
+    // or if explicitly not localhost and protocol is http (remote dev without SSL)
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        return '';
     }
 
-    // Default to relative (assumes Nginx proxy)
-    return '';
+    // Fallback for local dev
+    return 'http://localhost:3005';
 };
