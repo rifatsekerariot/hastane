@@ -1,17 +1,18 @@
 import { getApiUrl } from '../utils/apiConfig';
 
-// ...
-const apiUrl = getApiUrl();
-const [roomsRes, devicesRes] = await Promise.all([
-    axios.get(`${apiUrl}/api/admin/rooms`),
-    axios.get(`${apiUrl}/api/admin/devices`)
-]);
-setRooms(roomsRes.data);
-setDevices(devicesRes.data);
-        } catch (error) {
-    console.error('Error fetching data', error);
-}
-    };
+const fetchData = async () => {
+    try {
+        const apiUrl = getApiUrl();
+        const [roomsRes, devicesRes] = await Promise.all([
+            axios.get(`${apiUrl}/api/admin/rooms`),
+            axios.get(`${apiUrl}/api/admin/devices`)
+        ]);
+        setRooms(roomsRes.data);
+        setDevices(devicesRes.data);
+    } catch (error) {
+        console.error('Error fetching data', error);
+    }
+};
 
 const handleCreateRoom = async (e) => {
     e.preventDefault();
