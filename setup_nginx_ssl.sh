@@ -41,7 +41,7 @@ server {
 
     # Frontend (React PWA)
     location / {
-        proxy_pass http://localhost:5173;
+        proxy_pass http://127.0.0.1:5173;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -51,7 +51,7 @@ server {
 
     # Backend API
     location /api/ {
-        proxy_pass http://localhost:3005;
+        proxy_pass http://127.0.0.1:3005;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -61,7 +61,7 @@ server {
 
     # Socket.io (Websockets)
     location /socket.io/ {
-        proxy_pass http://localhost:3005;
+        proxy_pass http://127.0.0.1:3005;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
