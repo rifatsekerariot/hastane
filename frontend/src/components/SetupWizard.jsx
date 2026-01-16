@@ -1,7 +1,21 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Settings, Save } from 'lucide-react';
 import { getApiUrl } from '../utils/apiConfig';
 
 const SetupWizard = () => {
-    // ...
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        hospitalName: '',
+        adminPassword: '',
+        hl7Port: 2575
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -11,7 +25,7 @@ const SetupWizard = () => {
             navigate('/admin');
         } catch (error) {
             console.error('Setup failed', error);
-            alert('Kurulum başarısız oldu.');
+            alert('Kurulum başarısız oldu: ' + error.message);
         }
     };
 
