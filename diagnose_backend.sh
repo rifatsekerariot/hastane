@@ -19,4 +19,4 @@ fi
 
 echo ""
 echo "=== 4. LOGLAR ==="
-docker-compose logs --tail=50 backend
+docker compose logs --tail=50 backend

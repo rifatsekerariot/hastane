@@ -8,7 +8,7 @@ git pull
 
 echo "=== 2. EKSI KONTEYNERLERI TEMIZLE ==="
 # Konteynerleri durdur ve sil
-docker-compose down
+docker compose down
 
 # Opsiyonel: Veritabani hacmini (volume) temizlemek isterseniz asagidaki satirin basindaki # isaretini kaldirin.
 # DIKKAT: BU ISLEM TUM VERITABANINI SILER!
@@ -17,7 +17,7 @@ docker-compose down
 echo "=== 3. TEMIZ KURULUM VE BASLATMA ==="
 # --build: degisiklikleri uygula
 # -d: arka planda calistir
-docker-compose up -d --build
+docker compose up -d --build
 
 echo "=== 4. SAGLIK KONTROLU (HEALTH CHECK) ==="
 echo "Backend'in hazir olmasi icin 10 saniye bekleniyor..."
@@ -29,7 +29,7 @@ curl -v http://127.0.0.1:3005/health || echo "Backend henuz hazir degil veya cur
 
 echo ""
 echo "=== LOGLAR (Backend Son 50 Satir) ==="
-docker-compose logs --tail=50 backend
+docker compose logs --tail=50 backend
 
 echo ""
 echo "=== KURULUM TAMAMLANDI ==="
