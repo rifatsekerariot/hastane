@@ -52,20 +52,20 @@ const RoomScreen = () => {
         <div className={`min-h-screen flex flex-col items-center justify-center text-white transition-colors duration-500 ${getTheme()}`}>
 
             {/* Status Header */}
-            <div className="absolute top-10 text-4xl font-bold uppercase tracking-widest opacity-80">
+            <div className="absolute top-6 md:top-10 text-xl md:text-4xl font-bold uppercase tracking-widest opacity-80 text-center px-4">
                 {roomData.status === 'Normal' ? 'Oda Bilgisi' : roomData.status}
             </div>
 
             {/* Main Content */}
-            <div className="flex flex-col items-center gap-8">
-                {roomData.status === 'Bebek' && <Baby size={120} className="text-white drop-shadow-lg" />}
-                {roomData.status === 'Ameliyatta' && <Activity size={120} className="text-white drop-shadow-lg" />}
+            <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4">
+                {roomData.status === 'Bebek' && <Baby className="w-24 h-24 md:w-32 md:h-32 text-white drop-shadow-lg" />}
+                {roomData.status === 'Ameliyatta' && <Activity className="w-24 h-24 md:w-32 md:h-32 text-white drop-shadow-lg" />}
 
-                <h1 className="text-7xl font-black drop-shadow-xl p-4 bg-black/20 rounded-xl backdrop-blur-sm">
+                <h1 className="text-4xl md:text-7xl font-black drop-shadow-xl p-4 md:p-6 bg-black/20 rounded-xl backdrop-blur-sm text-center w-full max-w-4xl break-words">
                     {roomData.patientName || 'BOŞ'}
                 </h1>
 
-                <div className="text-2xl mt-4 font-light opacity-90">
+                <div className="text-lg md:text-2xl mt-4 font-light opacity-90 text-center">
                     {roomData.doctorName}
                 </div>
             </div>
