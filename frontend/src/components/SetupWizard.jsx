@@ -12,6 +12,20 @@ const SetupWizard = () => {
         hl7Port: 2575
     });
 
+    useEffect(() => {
+        const checkStatus = async () => {
+            try {
+                const res = await axios.get(`${getApiUrl()}/api/setup/status`);
+                if (res.data.isSetupCompleted) {
+                    navigate('/login');
+                }
+            } catch (error) {
+                console.error('Check status failed', error);
+            }
+        };
+        checkStatus();
+    }, []);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };

@@ -6,12 +6,13 @@ import AdminPanel from './components/AdminPanel';
 
 import Login from './components/Login';
 import RequireAuth from './components/RequireAuth';
+import RootRedirect from './components/RootRedirect';
 
 function App() {
     return (
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Routes>
-                <Route path="/" element={<Navigate to="/setup" replace />} />
+                <Route path="/" element={<RootRedirect />} />
                 <Route path="/setup" element={<SetupWizard />} />
                 <Route path="/room/:deviceToken" element={<RoomScreen />} />
                 <Route path="/login" element={<Login />} />

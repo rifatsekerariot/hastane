@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { getApiUrl } from '../utils/apiConfig';
+import { api } from '../utils/apiConfig';
 import { Lock, User } from 'lucide-react';
 
 const Login = () => {
@@ -17,11 +16,10 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            const apiUrl = getApiUrl();
-            const res = await axios.post(`${apiUrl}/api/auth/login`, credentials);
+            const res = await api.post('/api/auth/login', credentials);
 
-            // Store token and user info
-            localStorage.setItem('token', res.data.token);
+            // Cookie is set automatically 
+            // We just store user info for UI display
             localStorage.setItem('user', JSON.stringify(res.data.user));
 
             navigate('/admin');

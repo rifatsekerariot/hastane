@@ -1,23 +1,30 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = function (req, res, next) {
-    // Get token from header
-    const token = req.header('Authorization');
+    // 1. Try getting token from Cookie (Preferred)
+    let token = req.cookies.token;
 
-    // Check if not token
+    // 2. Fallback to Header (for mobile apps or specialized clients)
+    if (!token && req.header('Authorization')) {
+        const authHeader = req.header('Authorization');
+        token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+    }
+
+    // Check if no token
     if (!token) {
-        return res.status(401).json({ msg: 'No token, authorization denied' });
+        return res.status(401).json({ msg: 'Yetkilendirme reddedildi: Token eksik' });
     }
 
     // Verify token
     try {
-        // Remove 'Bearer ' prefix if present
-        const tokenString = token.startsWith('Bearer ') ? token.slice(7) : token;
-
-        const decoded = jwt.verify(tokenString, process.env.JWT_SECRET || 'fallback_secret_ChangeMeInProd');
-        req.user = decoded; // { id: '...', role: '...' }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_ChangeMeInProd');
+        req.user = decoded;
         next();
     } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        // If token is invalid (expired), clear the cookie to avoid loops
+        if (req.cookies.token) {
+            res.clearCookie('token');
+        }
+        res.status(401).json({ msg: 'Token geçersiz' });
     }
 };

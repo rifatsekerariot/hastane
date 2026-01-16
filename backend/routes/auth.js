@@ -51,8 +51,16 @@ router.post('/login', async (req, res) => {
                 // Update last login
                 db.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
 
+                // Set HttpOnly Cookie
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production', // true in HTTPS
+                    sameSite: 'strict', // Protect against CSRF
+                    maxAge: 12 * 60 * 60 * 1000 // 12 hours
+                });
+
                 res.json({
-                    token,
+                    msg: 'Giriş Başarılı',
                     user: payload
                 });
             }
@@ -74,6 +82,14 @@ router.get('/user', auth, async (req, res) => {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
+});
+
+// @route   POST api/auth/logout
+// @desc    Clear auth cookie
+// @access  Public
+router.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.json({ msg: 'Çıkış yapıldı' });
 });
 
 module.exports = router;

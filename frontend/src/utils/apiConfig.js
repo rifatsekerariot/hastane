@@ -1,15 +1,7 @@
+// Basic URL export (Legacy - replace usage with api.js over time)
 export const getApiUrl = () => {
     // If VITE_API_URL is set (e.g. in Docker/Production), use it.
-    // If not, and we are in dev (localhost), default to localhost:3005.
-    // However, if we are behind Nginx (production), relative paths are often best.
-
-    // For this setup:
-    // 1. Production (Nginx): we want requests to go to '/api' relative to domain
-    // 2. Local Dev: we want requests to 'http://localhost:3005'
-
-    if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
-    }
+    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
 
     // Default to relative if on HTTPS (Production/Nginx)
     // or if explicitly not localhost and protocol is http (remote dev without SSL)
@@ -20,3 +12,11 @@ export const getApiUrl = () => {
     // Fallback for local dev
     return 'http://localhost:3005';
 };
+
+// New Axios Instance Helper
+import axios from 'axios';
+
+export const api = axios.create({
+    baseURL: getApiUrl(),
+    withCredentials: true // Important: Send cookies
+});

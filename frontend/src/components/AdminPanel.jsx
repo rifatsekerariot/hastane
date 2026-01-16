@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Monitor, Plus, Check, Link as LinkIcon, Users, Settings, LogOut, Trash2, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getApiUrl } from '../utils/apiConfig';
+import { getApiUrl, api } from '../utils/apiConfig';
 
 const AdminPanel = () => {
     const navigate = useNavigate();
@@ -22,29 +21,27 @@ const AdminPanel = () => {
         fetchData();
     }, [activeTab]);
 
-    const getAuthHeader = () => ({
-        headers: { Authorization: localStorage.getItem('token') }
-    });
+    const logout = async () => {
+        try {
+            await api.post('/api/auth/logout');
+        } catch (err) { console.error(err); }
 
-    const logout = () => {
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/login');
     };
 
     const fetchData = async () => {
         setLoading(true);
-        const apiUrl = getApiUrl();
         try {
             if (activeTab === 'dashboard') {
                 const [roomsRes, devicesRes] = await Promise.all([
-                    axios.get(`${apiUrl}/api/admin/rooms`, getAuthHeader()),
-                    axios.get(`${apiUrl}/api/admin/devices`, getAuthHeader())
+                    api.get(`/api/admin/rooms`),
+                    api.get(`/api/admin/devices`)
                 ]);
                 setRooms(roomsRes.data);
                 setDevices(devicesRes.data);
             } else if (activeTab === 'users') {
-                const usersRes = await axios.get(`${apiUrl}/api/users`, getAuthHeader());
+                const usersRes = await api.get(`/api/users`);
                 setUsers(usersRes.data);
             }
         } catch (error) {
@@ -60,7 +57,7 @@ const AdminPanel = () => {
     const handleCreateRoom = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${getApiUrl()}/api/admin/rooms`, newRoom, getAuthHeader());
+            await api.post(`/api/admin/rooms`, newRoom);
             setNewRoom({ roomNumber: '', department: '' });
             fetchData();
         } catch (error) { alert('Oda eklenemedi'); }
@@ -70,7 +67,7 @@ const AdminPanel = () => {
         const name = prompt('Cihaz Adı Girin (Örn: iPad 1):');
         if (!name) return;
         try {
-            await axios.post(`${getApiUrl()}/api/admin/devices`, { deviceName: name, roomNumber }, getAuthHeader());
+            await api.post(`/api/admin/devices`, { deviceName: name, roomNumber });
             fetchData();
         } catch (error) { alert('Cihaz eklenemedi'); }
     };
@@ -78,7 +75,7 @@ const AdminPanel = () => {
     const handleCreateUser = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${getApiUrl()}/api/users`, newUser, getAuthHeader());
+            await api.post(`/api/users`, newUser);
             setNewUser({ username: '', password: '', fullName: '', role: 'viewer' });
             fetchData();
         } catch (error) { alert(error.response?.data?.msg || 'Kullanıcı eklenemedi'); }
@@ -87,7 +84,7 @@ const AdminPanel = () => {
     const handleDeleteUser = async (id) => {
         if (!confirm('Kullanıcıyı silmek istediğinize emin misiniz?')) return;
         try {
-            await axios.delete(`${getApiUrl()}/api/users/${id}`, getAuthHeader());
+            await api.delete(`/api/users/${id}`);
             fetchData();
         } catch (error) { alert(error.response?.data?.msg || 'Silinemedi'); }
     };

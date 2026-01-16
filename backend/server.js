@@ -1,14 +1,56 @@
-require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 const db = require('./config/db');
 const seedData = require('./scripts/seed');
 
 // Initialize App
 const app = express();
+
+// Security Middleware
+app.use(helmet()); // Secure Headers
+app.use(cookieParser()); // Parse Cookies
+
+// Rate Limiting (Prevent DDoS/Brute Force)
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use('/api/', limiter);
+
+// Trust Proxy (Required for Nginx + Rate Limit)
+app.set('trust proxy', 1);
+
+// CORS Config (Allow Credentials for Cookies)
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            'https://hastane.fikirbizden.com',
+            'http://localhost:5173',
+            'http://127.0.0.1:5173'
+        ];
+
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.fikirbizden.com')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true // Important for Cookies
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
 
 // Run Seeds
 seedData();
@@ -16,18 +58,10 @@ seedData();
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: "*", // Allow all for now, tighten in production
+        origin: "*", // Socket.io handles own CORS, keep lenient or match express
         methods: ["GET", "POST"]
     }
 });
-
-// Middleware
-app.use(cors({
-    origin: '*', // Allow all origins to rule out CORS issues
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(express.json());
 
 // Routes
 app.use('/api/setup', require('./routes/setup'));
