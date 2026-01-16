@@ -81,4 +81,33 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// @route   PUT api/users/change-password
+// @desc    Change own password
+// @access  Private
+router.put('/change-password', async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        // Get user
+        const result = await db.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+        const user = result.rows[0];
+
+        // Check current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!isMatch) {
+            return res.status(400).json({ msg: 'Mevcut şifre yanlış' });
+        }
+
+        // Hash new
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(newPassword, salt);
+
+        await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, req.user.id]);
+        res.json({ msg: 'Şifre başarıyla güncellendi' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
