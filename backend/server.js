@@ -5,9 +5,14 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 const path = require('path');
 const db = require('./config/db');
+const seedData = require('./scripts/seed');
 
 // Initialize App
 const app = express();
+
+// Run Seeds
+seedData();
+
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
